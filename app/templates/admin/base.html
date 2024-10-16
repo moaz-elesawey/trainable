@@ -1,0 +1,25 @@
+{% extends 'index.html' %}
+
+{% block content %}
+
+<div class='mb-3'>
+  
+<nav class='nav nav-pills justify-content-center'>
+  <li class='nav-item'>
+    <a 
+      class="nav-link {% if title == 'Panel' %}active {% endif %}"
+      href="{{ url_for('admin.panel') }}" aria-current='page'
+    >Panel</a>
+  </li>
+  <li class='nav-item'>
+    <a 
+      class="nav-link {% if title == 'Register User' %}active {% endif %}"
+      href="{{ url_for('admin.register_user') }}"
+    >Register User</a>
+  </li>
+</nav>
+</div>
+{% block admin_content %}
+{% endblock admin_content %}
+
+{% endblock content %}

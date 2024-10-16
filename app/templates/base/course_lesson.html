@@ -1,0 +1,62 @@
+{% extends 'index.html' %}
+
+{% block content %}
+
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('base.home') }}">Home</a></li>
+      <li class="breadcrumb-item">
+        <a href="{{ url_for('base.course', course_id=course_lesson.course_id) }}">
+          {{ course_lesson.course.name }}
+        </a>
+      </li>
+      <li 
+        class="breadcrumb-item {% if title == 'Course' %} active {% endif %}"
+        {% if title == 'Course' %} aria-current='page' {% endif %}
+      >
+        {{ course_lesson.lesson.name }}
+      </li>
+    </ol>
+  </nav>
+
+  <div class='row'>
+    <div class='col-12 col-sm-12 col-md-7 col-lg-8 mb-4'>
+      <div class='card'>
+        <div class='card-body'>
+          <h5 class='card-title border-bottom py-2'>{{ course_lesson.lesson.name }}</h5>
+          <div class='card-text'>
+            {{ course_lesson.lesson.content|safe }}
+          </div>
+        </div>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center my-4">
+        <a class='btn btn-primary'>Prev</a>
+        <div class='border bg-light rounded p-2'>{{ course_lesson.lesson.name }}</div>
+        <a class='btn btn-primary'>Next</a>
+      </div>
+    </div>
+
+
+    <div class='col-12 col-sm-12 col-md-5 col-lg-4 mb-4'>
+      <div class='card'>
+        <div class='card-body'>
+          <h5 class='card-title border-bottom py-2'>Course Lesson</h5>
+          <div class='card-text'>
+            <ul class="list-group">
+              {% for lesson in course_lesson.course.lessons %}
+              <a 
+              class="list-group-item list-group-item-action {% if lesson.lesson_id == course_lesson.lesson_id %}active{%endif%}"
+              href="{{ url_for('base.course_lesson', course_id=lesson.course_id, lesson_id=lesson.lesson_id) }}">
+                {{ lesson.lesson.name }}
+              </a>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+{% endblock content %}

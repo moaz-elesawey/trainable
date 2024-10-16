@@ -1,0 +1,26 @@
+{% extends 'index.html' %}
+{% from 'form_helpers.html' import render_form_field, render_form_check %}
+
+{% block content %}
+
+    <div class="row">
+      <div class="m-auto col-12 col-sm-12 col-md-8 col-lg-8">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title border-bottom text-center poppins-medium pb-3">
+              Sign In To Get Access
+            </h4>
+            <form method='post', action="">
+              {{ form.hidden_tag() }}
+              {{ render_form_field(form.username, 'login__username') }}
+              {{ render_form_field(form.password, 'login__password') }}
+              {{ render_form_check(form.remember, 'login__remember') }}
+              <div class="border-bottom my-3"></div>
+              {{ form.submit(class='btn btn-primary w-100') }}
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{% endblock content %}

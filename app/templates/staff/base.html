@@ -1,0 +1,51 @@
+{% extends 'index.html' %}
+
+{% block content %}
+
+<div class='mb-3'>
+  
+<nav class='nav nav-pills justify-content-center'>
+  <li class='nav-item'>
+    <a 
+      class="nav-link {% if title == 'Panel' %}active {% endif %}"
+      href="{{ url_for('staff.panel') }}" aria-current='page'
+    >Panel</a>
+  </li>
+  <li class='nav-item'>
+    <a 
+      class="nav-link {% if title == 'New Course' %}active {% endif %}"
+      href="{{ url_for('staff.add_new_course') }}" aria-current='page'
+    >New Course</a>
+  </li>
+  <li class='nav-item'>
+    <a 
+      class="nav-link {% if title == 'Assign Course' %}active {% endif %}"
+      href="{{ url_for('staff.assign_user_course') }}" aria-current='page'
+    >Assign Course</a>
+  </li>
+  <li class='nav-item'>
+    <a 
+      class="nav-link {% if title == 'New Lesson' %}active {% endif %}"
+      href="{{ url_for('staff.add_new_lesson') }}" aria-current='page'
+    >New Lesson</a>
+  </li>
+  <li class='nav-item'>
+    <a 
+      class="nav-link {% if title == 'New Assessment' %}active {% endif %}"
+      href="{{ url_for('staff.add_new_assessment') }}" aria-current='page'
+    >New Assessment</a>
+  </li>
+  <li class='nav-item'>
+    <a 
+      class="nav-link {% if title == 'Assign Assessment' %}active {% endif %}"
+      href="{{ url_for('staff.assign_user_assessment') }}" aria-current='page'
+    >Assign Assessment</a>
+  </li>
+
+</nav>
+</div>
+
+{% block staff_content %}
+{% endblock staff_content %}
+
+{% endblock content %}

@@ -1,0 +1,46 @@
+{% macro render_form_field(field, id) %}
+
+  <div class='mb-3'>
+    {% if field.errors %}
+      {{ field.label(class='form-control-label is-invalid mb-1', for=id) }}
+      {{ field(class='form-control is-invalid', id=id) }}
+    {% else %}
+      {{ field.label(class='form-control-label mb-1', for=id) }}
+      {{ field(class='form-control', id=id) }}
+    {% endif %}
+  </div>
+
+{% endmacro %}
+
+{% macro render_form_select(field, id) %}
+
+  <div class='mb-3'>
+    {% if field.errors %}
+      {{ field.label(class='form-select-label is-invalid mb-1', for=id) }}
+      {{ field(class='form-select is-invalid', id=id) }}
+        {% for error in field.errors %}
+          <div class="invalid-feedback">
+            * {{ error }}
+          </div>
+        {% endfor %}
+    {% else %}
+      {{ field.label(class='form-select-label mb-1', for=id) }}
+      {{ field(class='form-select', id=id) }}
+    {% endif %}
+  </div>
+
+{% endmacro %}
+
+{% macro render_form_check(field, id) %}
+
+  <div class='mb-3'>
+    {% if field.errors %}
+      {{ field(class='form-check-input is-invalid', id=id) }}
+      {{ field.label(class='form-check-label is-invalid ml-2', for=id) }}
+    {% else %}
+      {{ field(class='form-check-input', id=id) }}
+      {{ field.label(class='form-check-label ml-2', for=id) }}
+    {% endif %}
+  </div>
+
+{% endmacro %}

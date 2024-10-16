@@ -1,0 +1,24 @@
+{% extends 'staff/base.html' %}
+{% from 'form_helpers.html' import render_form_select %}
+
+{% block staff_content %}
+
+<div class='card pb-0'>
+  <div class='card-body p-3'>
+    <h5 class="card-title border-bottom text-center poppins-medium pb-3">
+      Assign Course To A User
+    </h5>
+
+    <form method='post' action=''>
+        {{ form.hidden_tag() }}
+
+        {{ render_form_select(form.user, id='assign_user_course__user') }}
+        {{ render_form_select(form.course, id='assign_user_course__course') }}
+
+        <div class="border-bottom my-3"></div>
+        {{ form.submit(class='btn btn-primary w-100') }}
+    </form>
+  </div>
+</div>
+{% endblock staff_content %}
+

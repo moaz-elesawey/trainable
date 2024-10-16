@@ -1,0 +1,52 @@
+{% extends 'admin/base.html' %}
+{% from 'form_helpers.html' import render_form_check %}
+
+{% block admin_content %}
+
+<div class="row">
+  <div class="m-auto col-12 col-sm-12 col-md-8 col-lg-8">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title border-bottom text-center poppins-medium pb-3">
+          Assign User Permissions
+        </h4>
+        <form method='post', action="">
+          <div class="mb-3">
+            <label for="assign_permissions__fullname" class='form-control-label'>User</label>
+            <input 
+              type="text" name="" value="{{ user.fullname }}" 
+              id='assign_permissions__fullname' class='form-control' readonly />
+          </div>
+          {{ form.hidden_tag() }}
+          
+          <table class='table table-sm'>
+            <thead>
+            <tr>
+              <th>#</th>
+              <th>Permission</th>
+            </tr>
+            </thead>
+            <tbody style='max-height: 2rem;'>
+              {% for perm in form.permissions %}
+                <tr>
+                  <td>{{ perm() }}</td>
+                  <td>{{ perm.label() }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+          <div class="border-bottom my-3"></div>
+          {{ form.submit(class='btn btn-primary w-100') }}
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+{% endblock admin_content %}
+
+

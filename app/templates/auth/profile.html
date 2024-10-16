@@ -1,0 +1,107 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<!---->
+<!--<div class="d-flex justify-content-start align-items-center">-->
+<!--  <a href="{{ url_for('base.home') }}" class="btn btn-primary">Go Home</a>-->
+<!--</div>-->
+<!---->
+
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{ url_for('base.home') }}">Home</a></li>
+    <li class="breadcrumb-item active">
+       Profile
+    </li>
+  </ol>
+</nav>
+
+<div class="row mt-4">
+  <div class="col-12 col-sm-12 col-md-8 col-lg-8 m-auto">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title border-bottom py-2">Hi, {{ user.fullname }}</h5>
+        <div class="card-text">
+          <div class="row">
+            <div class="col-12 col-sm-12 col-md-4 col-lg-4">
+              <img 
+                src="{{ url_for('static', filename='assets/default-profile.webp') }}"
+                class="img-fluid img-thumbnail rounded" width="100%" alt="Default Profile Pic" />
+            </div>
+            <div class="col-12 col-sm-12 col-md-8 col-lg-8">
+              <div>
+                <div class="row">
+                  <div class="col-6 mb-2">
+                    <label for="fullname">Fullname</label>
+                    <input 
+                      type="text" id="fullname" 
+                      value="{{user.fullname}}"
+                      class="form-control" readonly 
+                    />
+                  </div>
+                  <div class="col-6 mb-2">
+                    <label for="username">Username</label>
+                    <input 
+                      type="text" id="username" 
+                      value="{{user.username}}"
+                      class="form-control" readonly 
+                    />
+                  </div>
+                </div>
+                <div class="mb-2">
+                  <label for="title">Title</label>
+                  <input 
+                    type="text" id="title" 
+                    value="{{user.profile.title}}"
+                    class="form-control" readonly 
+                  /> 
+                </div>
+                <!--<div class="row">-->
+                <!--  <div class="col-6 mb-2">-->
+                <!--    <label for="age">Age</label>-->
+                <!--    <input -->
+                <!--      type="text" id="age" -->
+                <!--      value="{{user.profile.age}}"-->
+                <!--      class="form-control" readonly -->
+                <!--    />-->
+                <!--  </div>-->
+                <!--  <div class="col-6 mb-2">-->
+                <!--    <label for="experience">Experience</label>-->
+                <!--    <input -->
+                <!--      type="text" id="experience" -->
+                <!--      value="{{user.profile.years_of_experience}}"-->
+                <!--      class="form-control" readonly -->
+                <!--    />-->
+                <!--  </div>-->
+                <!--</div>-->
+                <div class="mb-2">
+                  <label for="group">Group</label>
+                  <input 
+                    type="text" id="group" 
+                    value="{{user.group.name}}"
+                    class="form-control" readonly 
+                  /> 
+                </div>
+                <div class="mb-2">
+                  <label for="last_login">Last Login</label>
+                  <input 
+                    type="text" id="last_login" 
+                    value="{{user.last_login.strftime('%Y-%m-%d %H:%M %p')}}"
+                    class="form-control" readonly 
+                  /> 
+                </div>
+            </div>
+          </div>
+        
+          <div class="border-bottom mb-3"></div>
+            <div class="d-flex justify-content-between gap-4 align-items-center">
+              <a href="#" class="btn btn-warning w-100">Edit Profile</a>
+              <a href="{{ url_for('auth.change_password') }}" class="btn btn-danger w-100">Change Password</a>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}

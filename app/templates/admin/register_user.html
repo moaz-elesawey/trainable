@@ -1,0 +1,43 @@
+{% extends 'admin/base.html' %}
+{% from 'form_helpers.html' import render_form_field, render_form_check, render_form_select %}
+
+{% block admin_content %}
+
+    <div class="row">
+      <div class="m-auto col-12 col-sm-12 col-md-8 col-lg-8">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title border-bottom text-center poppins-medium pb-3">
+              Register New User To The System
+            </h4>
+            <form method='post', action="">
+              {{ form.hidden_tag() }}
+              <div class='row'>
+                <div class='col-12 col-sm-12 col-md-6 col-lg-6'>
+                  {{ render_form_field(form.fullname, 'register_user__fullname') }}
+                </div>
+                <div class='col-12 col-sm-12 col-md-6 col-lg-6'>
+                  {{ render_form_field(form.username, 'register_user__username') }}
+                </div>
+              </div>
+              {{ render_form_select(form.group, 'register_user__group') }}
+              <div class='mb-3'>
+                <label for="register_user__password" class='form-control-label'>Initial Password</label>
+                <input type="text" name="" value="P@ssw0rd" id='register_user__password' 
+                       disabled class='form-control ' />
+              </div>
+              <div class='d-flex flex-row justify-content-between align-items-center'>
+              {{ render_form_check(form.is_active, 'register_user__is_active') }}
+              {{ render_form_check(form.is_staff, 'register_user__is_staff') }}
+              {{ render_form_check(form.is_superuser, 'register_user__is_superuser') }}
+              </div>
+              <div class="border-bottom my-3"></div>
+              {{ form.submit(class='btn btn-primary w-100') }}
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{% endblock admin_content %}
+

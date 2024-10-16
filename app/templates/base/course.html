@@ -1,0 +1,52 @@
+{% extends 'index.html' %}
+
+{% block content %}
+
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('base.home') }}">Home</a></li>
+      <li 
+        class="breadcrumb-item {% if title == 'Course' %} active {% endif %}"
+        {% if title == 'Course' %} aria-current='page' {% endif %}
+      >
+        {{ course.name }}
+      </li>
+    </ol>
+  </nav>
+
+
+  <div class='row'>
+    <div class='col-12 col-sm-12 col-md-7 col-lg-8 mb-4'>
+      <div class='card'>
+        <div class='card-body'>
+          <h5 class='card-title border-bottom py-2'>{{ course.name }}</h5>
+          <div class='card-text'>{{ course.content|safe }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class='col-12 col-sm-12 col-md-5 col-lg-4 mb-4'>
+      <div class='card'>
+        <div class='card-body'>
+          <h5 class='card-title border-bottom py-2'>Course Lessons</h5>
+          <div class='card-text'>
+            {% if not course.lessons %}
+              <div class='text-center poppins-semibold'>No Lessons Yet</div>
+            {% else %}
+            <ul class="list-group">
+              {# {% if course_lesson.lesson_id == lesson.lesson_id %}active{%endif%} #}
+              {% for course_lesson in course.lessons %}
+              <a 
+              class="list-group-item list-group-item-action"
+              href="{{ url_for('base.course_lesson', course_id=course_lesson.course_id, lesson_id=course_lesson.lesson_id) }}">
+                {{ course_lesson.lesson.name }}
+              </a>
+              {% endfor %}
+            </ul>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
