@@ -10,8 +10,8 @@ from . import db, login_manager
 
 
 @login_manager.user_loader
-def load_user(user_id: int) -> "User":
-    return User.query.get(user_id)
+def load_user(user_id: uuid.UUID) -> "User":
+    return db.session.get_one(User, ident=user_id)
 
 
 class Group(db.Model):
