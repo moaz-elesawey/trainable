@@ -8,8 +8,8 @@ from wtforms import (
 from wtforms.validators import DataRequired, Length
 from flask_ckeditor import CKEditorField
 from sqlalchemy import select, not_
-from .. import db
-from ..models import Course, User, Lesson
+from ... import db
+from ...models import Course, User, Lesson
 
 
 empty_option = [("", "-------")]

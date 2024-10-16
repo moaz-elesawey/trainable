@@ -1,63 +1,65 @@
+import os
 from functools import lru_cache
+from dotenv import load_dotenv
+
+from .utils import assemble_database_url
+
+
+load_dotenv()
 
 
 class Config:
     DEBUG = False
     TESTING = False
-    SUPERUSER_GROUP_NAME = "Super Users"
-    SUPERUSER_GROUP_ABBREVIATION = "SU"
-    FIRST_SUPERUSER = "admin"
-    FIRST_SUPERUSER_PASSWORD = "P@ssw0rd"
+
+    SECRET_KEY = os.getenv("SECRET_KEY")
+
+    SUPERUSER_GROUP_NAME = os.getenv("SUPERUSER_GROUP_NAME")
+    SUPERUSER_GROUP_ABBREVIATION = os.getenv("SUPERUSER_GROUP_ABBREVIATION")
+    FIRST_SUPERUSER = os.getenv("FIRST_SUPERUSER")
+    FIRST_SUPERUSER_PASSWORD = os.getenv("FIRST_SUPERUSER_PASSWORD")
+
     SQLALCHEMY_ECHO = False
     SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True}
+
+    DEFAULT_USER_PASSWORD = os.getenv("DEFAULT_USER_PASSWORD")
+
     CKEDITOR_PKG_TYPE = "standard"
-    DEFAULT_USER_PASSWORD = "P@ssw0rd"
-    SQLALCHEMY_DATABASE_URI = "sqlite:///db.sqlite"
 
+    POSTGRES_USER = os.getenv("POSTGRES_USER")
+    POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
+    POSTGRES_HOST = os.getenv("POSTGRES_HOST")
+    POSTGRES_PORT = os.getenv("POSTGRES_PORT")
+    POSTGRES_DB = os.getenv("POSTGRES_DB")
 
-# def assemble_database_url(
-#     driver: str, user: str, password: str, host: str, port: int, database: str
-# ) -> str:
-#     """Assemble Database URL"""
-
-#     conn_string = "{}://{}:{}@{}:{}/{}".format(
-#         quote(driver),
-#         quote(user),
-#         quote(password),
-#         quote(host),
-#         port,
-#         quote(database),
-#     )
-
-#     return conn_string
+    SQLALCHEMY_DATABASE_URI = assemble_database_url(
+        "postgresql",
+        POSTGRES_USER,
+        POSTGRES_PASSWORD,
+        POSTGRES_HOST,
+        POSTGRES_PORT,
+        POSTGRES_DB,
+    )
 
 
 class LocalConfig(Config):
     DEBUG = True
     TESTING = False
-    SECRET_KEY = "1biPkWkAcTOAYkCGhTCqNnn9HP0fXhpruezp4VXFeZmKVyMJmWciKILA4KpJHNTLEBfBkqXNblB75kC6g-FyMg"
-    SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 
 class StagingConfig(Config):
     DEBUG = True
     TESTING = False
-    SECRET_KEY = "1biPkWkAcTOAYkCGhTCqNnn9HP0fXhpruezp4VXFeZmKVyMJmWciKILA4KpJHNTLEBfBkqXNblB75kC6g-FyMg"
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 class TestingConfig(Config):
     DEBUG = True
     TESTING = False
-    SECRET_KEY = "testing-secret-key"
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 class ProductionConfig(Config):
     DEBUG = False
     TESTING = False
-    SECRET_KEY = "1biPkWkAcTOAYkCGhTCqNnn9HP0fXhpruezp4VXFeZmKVyMJmWciKILA4KpJHNTLEBfBkqXNblB75kC6g-FyMg"
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 CONFIGS = {

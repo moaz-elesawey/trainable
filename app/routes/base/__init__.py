@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, url_for, redirect, flash
 from flask_login import login_required, current_user
 from sqlalchemy import select
-from .. import db
-from ..models import User, Course, UserCourse, CourseLesson
+from ... import db
+from ...models import User, Course, UserCourse, CourseLesson
 
 
 bp = Blueprint("base", __name__, template_folder="templates")

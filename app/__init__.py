@@ -55,16 +55,16 @@ def initialize_app_extentions(app: Flask) -> None:
 def register_app_blueprints(app: Flask) -> None:
     """Register Blueprints"""
 
-    from .base import bp as base_bp
-    from .auth import bp as auth_bp
-    from .admin import bp as admin_bp
-    from .staff import bp as staff_bp
+    from .routes import base
+    from .routes import auth
+    from .routes import admin
+    from .routes import staff
 
     # Register Blueprints
-    app.register_blueprint(base_bp, url_prefix="/")
-    app.register_blueprint(auth_bp, url_prefix="/auth")
-    app.register_blueprint(admin_bp, url_prefix="/admin")
-    app.register_blueprint(staff_bp, url_prefix="/staff")
+    app.register_blueprint(base.bp, url_prefix="/")
+    app.register_blueprint(auth.bp, url_prefix="/auth")
+    app.register_blueprint(admin.bp, url_prefix="/admin")
+    app.register_blueprint(staff.bp, url_prefix="/staff")
 
 
 def configure_app_logger(app: Flask) -> None:

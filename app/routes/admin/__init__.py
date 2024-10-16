@@ -10,11 +10,12 @@ from flask import (
 )
 from flask_login import current_user
 from sqlalchemy import select, or_, delete
-from .. import db, bcrypt
-from .. import utils, consts
+from ... import db, bcrypt
+from ... import utils, consts
 from .forms import RegisterNewUserForm, AssignUserPermissionsForm
-from ..models import User, UserPermission
-from ..decorators import superuser_required, permission_required
+from ...models import User, UserPermission
+from ...decorators import superuser_required, permission_required
+
 
 bp = Blueprint("admin", __name__, template_folder="templates")
 

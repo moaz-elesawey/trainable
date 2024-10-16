@@ -12,10 +12,10 @@ from flask import (
 )
 from flask_login import logout_user, login_user, login_required, current_user
 
-from .. import db, bcrypt
+from ... import db, bcrypt
 from .forms import LoginForm, ChangePasswordForm
-from ..models import User
-from .. import utils
+from ...models import User
+from ... import utils
 
 
 bp = Blueprint("auth", __name__, template_folder="templates")

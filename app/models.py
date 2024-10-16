@@ -1,7 +1,9 @@
+import uuid
 from datetime import datetime
 
 from sqlalchemy import String, ForeignKey, Text, Integer, PrimaryKeyConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.dialects import postgresql as pg
 from flask_login import UserMixin
 
 from . import db, login_manager
@@ -15,7 +17,9 @@ def load_user(user_id: int) -> "User":
 class Group(db.Model):
     __tablename__ = "groups"
 
-    group_id: Mapped[int] = mapped_column(Integer(), primary_key=True)
+    group_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
 
     name: Mapped[str] = mapped_column(
         String(255), nullable=False, unique=True, index=True
@@ -25,7 +29,7 @@ class Group(db.Model):
     )
     description: Mapped[str] = mapped_column(Text(), nullable=True, default="N/A")
 
-    def get_id(self) -> int:
+    def get_id(self) -> uuid.UUID:
         return self.group_id
 
     def __repr__(self) -> str:
@@ -35,7 +39,9 @@ class Group(db.Model):
 class User(db.Model, UserMixin):
     __tablename__ = "users"
 
-    user_id: Mapped[int] = mapped_column(Integer(), primary_key=True)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
     username: Mapped[str] = mapped_column(
         String(255), nullable=False, unique=True, index=True
     )
@@ -47,15 +53,15 @@ class User(db.Model, UserMixin):
     is_superuser: Mapped[bool] = mapped_column(default=False)
 
     registered_at: Mapped[datetime] = mapped_column(default=datetime.now)
-    registered_by_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("users.user_id"), nullable=True
+    registered_by_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("users.user_id"), nullable=True
     )
     last_login: Mapped[datetime] = mapped_column(
         default=datetime.now, onupdate=datetime.now
     )
 
-    group_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("groups.group_id"), nullable=True
+    group_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("groups.group_id"), nullable=True
     )
     group: Mapped["Group"] = relationship(foreign_keys="User.group_id")
 
@@ -71,7 +77,7 @@ class User(db.Model, UserMixin):
 
     profile: Mapped["Profile"] = relationship(foreign_keys="Profile.user_id")
 
-    def get_id(self) -> int:
+    def get_id(self) -> uuid.UUID:
         return self.user_id
 
     def __repr__(self) -> str:
@@ -81,18 +87,20 @@ class User(db.Model, UserMixin):
 class Profile(db.Model):
     __tablename__ = "profiles"
 
-    profile_id: Mapped[int] = mapped_column(Integer(), primary_key=True)
+    profile_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
 
     title: Mapped[str] = mapped_column(String(255))
     age: Mapped[int] = mapped_column(Integer())
     years_of_experience: Mapped[int] = mapped_column(Integer())
     profile_picture: Mapped[str] = mapped_column(String(255))
 
-    user_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("users.user_id"), nullable=False
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("users.user_id"), nullable=False
     )
 
-    def get_id(self) -> int:
+    def get_id(self) -> uuid.UUID:
         return self.profile_id
 
     def __repr__(self) -> str:
@@ -102,7 +110,9 @@ class Profile(db.Model):
 class Permission(db.Model):
     __tablename__ = "permissions"
 
-    permission_id: Mapped[int] = mapped_column(Integer(), primary_key=True)
+    permission_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
 
     name: Mapped[str] = mapped_column(
         String(255), nullable=False, unique=True, index=True
@@ -113,7 +123,7 @@ class Permission(db.Model):
     )
     description: Mapped[str] = mapped_column(Text(), nullable=True, default="N/A")
 
-    def get_id(self) -> int:
+    def get_id(self) -> uuid.UUID:
         return self.permission_id
 
     def __repr__(self) -> str:
@@ -123,49 +133,51 @@ class Permission(db.Model):
 class UserPermission(db.Model):
     __tablename__ = "user_permissions"
 
-    user_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("users.user_id"), nullable=False
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("users.user_id"), nullable=False
     )
-    permission_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("permissions.permission_id"), nullable=False
+    permission_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("permissions.permission_id"), nullable=False
     )
 
     assigned_at: Mapped[datetime] = mapped_column(default=datetime.now)
-    assigned_by_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("users.user_id"), nullable=False
+    assigned_by_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("users.user_id"), nullable=False
     )
 
     __table_args__ = (PrimaryKeyConstraint("user_id", "permission_id"),)
 
-    def get_id(self) -> tuple[int]:
+    def get_id(self) -> tuple[uuid.UUID]:
         return (self.user_id, self.permission_id)
 
 
 class GroupPermission(db.Model):
     __tablename__ = "group_permissions"
 
-    group_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("groups.group_id"), nullable=False
+    group_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("groups.group_id"), nullable=False
     )
-    permission_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("permissions.permission_id"), nullable=False
+    permission_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("permissions.permission_id"), nullable=False
     )
 
     assigned_at: Mapped[datetime] = mapped_column(default=datetime.now)
-    assigned_by_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("users.user_id"), nullable=False
+    assigned_by_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("users.user_id"), nullable=False
     )
 
     __table_args__ = (PrimaryKeyConstraint("group_id", "permission_id"),)
 
-    def get_id(self) -> tuple[int]:
+    def get_id(self) -> tuple[uuid.UUID]:
         return (self.group_id, self.permission_id)
 
 
 class Course(db.Model):
     __tablename__ = "courses"
 
-    course_id: Mapped[int] = mapped_column(Integer(), primary_key=True)
+    course_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
 
     name: Mapped[str] = mapped_column(
         String(255), nullable=False, unique=True, index=True
@@ -179,7 +191,7 @@ class Course(db.Model):
     lessons: Mapped[list["CourseLesson"]] = relationship(back_populates="course")
     assessment: Mapped["CourseAssessment"] = relationship()
 
-    def get_id(self) -> int:
+    def get_id(self) -> uuid.UUID:
         return self.course_id
 
     @property
@@ -193,34 +205,36 @@ class Course(db.Model):
 class UserCourse(db.Model):
     __tablename__ = "user_courses"
 
-    user_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("users.user_id"), nullable=False
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("users.user_id"), nullable=False
     )
     user: Mapped["User"] = relationship(
         foreign_keys="UserCourse.user_id", back_populates="courses"
     )
-    course_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("courses.course_id"), nullable=False
+    course_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("courses.course_id"), nullable=False
     )
     course: Mapped["Course"] = relationship(
         foreign_keys="UserCourse.course_id", back_populates="users"
     )
 
     assigned_at: Mapped[datetime] = mapped_column(default=datetime.now)
-    assigned_by_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("users.user_id"), nullable=False
+    assigned_by_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("users.user_id"), nullable=False
     )
 
     __table_args__ = (PrimaryKeyConstraint("user_id", "course_id"),)
 
-    def get_id(self) -> tuple[int]:
+    def get_id(self) -> tuple[uuid.UUID]:
         return (self.user_id, self.course_id)
 
 
 class Lesson(db.Model):
     __tablename__ = "lessons"
 
-    lesson_id: Mapped[int] = mapped_column(Integer(), primary_key=True)
+    lesson_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
 
     name: Mapped[str] = mapped_column(String(255), nullable=False, index=True)
     index: Mapped[int] = mapped_column(Integer(), nullable=True)
@@ -228,7 +242,7 @@ class Lesson(db.Model):
 
     courses: Mapped[list["CourseLesson"]] = relationship(back_populates="lesson")
 
-    def get_id(self) -> int:
+    def get_id(self) -> uuid.UUID:
         return self.lesson_id
 
     def __repr__(self) -> str:
@@ -238,17 +252,17 @@ class Lesson(db.Model):
 class CourseLesson(db.Model):
     __tablename__ = "course_lessons"
 
-    course_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("courses.course_id"), nullable=False
+    course_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("courses.course_id"), nullable=False
     )
 
-    lesson_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("lessons.lesson_id"), nullable=False
+    lesson_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("lessons.lesson_id"), nullable=False
     )
 
     assigned_at: Mapped[datetime] = mapped_column(default=datetime.now)
-    assigned_by_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("users.user_id"), nullable=False
+    assigned_by_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("users.user_id"), nullable=False
     )
     course: Mapped["Course"] = relationship(
         foreign_keys=[course_id], back_populates="lessons"
@@ -259,20 +273,22 @@ class CourseLesson(db.Model):
 
     __table_args__ = (PrimaryKeyConstraint("course_id", "lesson_id"),)
 
-    def get_id(self) -> tuple[int]:
+    def get_id(self) -> tuple[uuid.UUID]:
         return (self.course_id, self.lesson_id)
 
 
 class Assessment(db.Model):
     __tablename__ = "assessments"
 
-    assessment_id: Mapped[int] = mapped_column(Integer(), primary_key=True)
+    assessment_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
 
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     summary: Mapped[str] = mapped_column(Text(), nullable=True, default="N/A")
     questions: Mapped[list["AssessmentQuestion"]] = relationship()
 
-    def get_id(self) -> int:
+    def get_id(self) -> uuid.UUID:
         return self.assessment_id
 
     def __repr__(self) -> str:
@@ -282,37 +298,37 @@ class Assessment(db.Model):
 class CourseAssessment(db.Model):
     __tablename__ = "course_assessments"
 
-    course_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("courses.course_id"), nullable=False
+    course_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("courses.course_id"), nullable=False
     )
 
-    assessment_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("assessments.assessment_id"), nullable=False
+    assessment_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("assessments.assessment_id"), nullable=False
     )
 
     assigned_at: Mapped[datetime] = mapped_column(default=datetime.now)
-    assigned_by_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("users.user_id"), nullable=False
+    assigned_by_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("users.user_id"), nullable=False
     )
     __table_args__ = (PrimaryKeyConstraint("course_id", "assessment_id"),)
 
-    def get_id(self) -> tuple[int]:
+    def get_id(self) -> tuple[uuid.UUID]:
         return (self.course_id, self.assessment_id)
 
 
 class UserAssessment(db.Model):
     __tablename__ = "user_assessments"
 
-    user_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("users.user_id"), nullable=False
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("users.user_id"), nullable=False
     )
 
-    assessment_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("assessments.assessment_id"), nullable=False
+    assessment_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("assessments.assessment_id"), nullable=False
     )
     assigned_at: Mapped[datetime] = mapped_column(default=datetime.now)
-    assigned_by_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("users.user_id"), nullable=False
+    assigned_by_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("users.user_id"), nullable=False
     )
 
     started_at: Mapped[datetime] = mapped_column(nullable=True)
@@ -323,16 +339,17 @@ class UserAssessment(db.Model):
 
     __table_args__ = (PrimaryKeyConstraint("user_id", "assessment_id"),)
 
-    def get_id(self) -> tuple[int]:
+    def get_id(self) -> tuple[uuid.UUID]:
         return (self.user_id, self.assessment_id)
 
 
 class Question(db.Model):
     __tablename__ = "questions"
 
-    question_id: Mapped[int] = mapped_column(
-        Integer(),
+    question_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True),
         primary_key=True,
+        default=uuid.uuid4,
     )
 
     question: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -340,7 +357,7 @@ class Question(db.Model):
 
     choices: Mapped[list["Choice"]] = relationship()
 
-    def get_id(self) -> int:
+    def get_id(self) -> uuid.UUID:
         return self.question_id
 
     def __repr__(self) -> str:
@@ -350,55 +367,57 @@ class Question(db.Model):
 class Answer(db.Model):
     __tablename__ = "answers"
 
-    answer_id: Mapped[int] = mapped_column(Integer(), primary_key=True)
+    answer_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
     answer: Mapped[str] = mapped_column(Text(), nullable=False)
 
-    question_id: Mapped[int] = mapped_column(
-        Integer(),
+    question_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True),
         ForeignKey("questions.question_id"),
         nullable=False,
         unique=True,
         index=True,
     )
 
-    def get_id(self) -> int:
+    def get_id(self) -> uuid.UUID:
         return self.answer_id
 
 
 class AssessmentQuestion(db.Model):
     __tablename__ = "assessment_questions"
 
-    assessment_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("assessments.assessment_id"), nullable=False
+    assessment_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("assessments.assessment_id"), nullable=False
     )
 
-    question_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("questions.question_id"), nullable=False
+    question_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("questions.question_id"), nullable=False
     )
 
     assigned_at: Mapped[datetime] = mapped_column(default=datetime.now)
-    assigned_by_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("users.user_id"), nullable=False
+    assigned_by_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("users.user_id"), nullable=False
     )
     __table_args__ = (PrimaryKeyConstraint("assessment_id", "question_id"),)
 
-    def get_id(self) -> tuple[int]:
+    def get_id(self) -> tuple[uuid.UUID]:
         return (self.assessment_id, self.question_id)
 
 
 class UserAssessmentQuestion(db.Model):
     __tablename__ = "user_assessment_questions"
 
-    user_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("users.user_id"), nullable=False
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("users.user_id"), nullable=False
     )
 
-    assessment_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("assessments.assessment_id"), nullable=False
+    assessment_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("assessments.assessment_id"), nullable=False
     )
 
-    question_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("questions.question_id"), nullable=False
+    question_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("questions.question_id"), nullable=False
     )
 
     completed_at: Mapped[datetime] = mapped_column(nullable=True)
@@ -408,22 +427,24 @@ class UserAssessmentQuestion(db.Model):
 
     __table_args__ = (PrimaryKeyConstraint("user_id", "assessment_id", "question_id"),)
 
-    def get_id(self) -> tuple[int]:
+    def get_id(self) -> tuple[uuid.UUID]:
         return (self.user_id, self.assessment_id, self.question_id)
 
 
 class Choice(db.Model):
     __tablename__ = "choices"
 
-    choice_id: Mapped[int] = mapped_column(Integer(), primary_key=True)
+    choice_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
 
     choice: Mapped[str] = mapped_column(String(255), nullable=False)
 
-    question_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("questions.question_id"), nullable=False
+    question_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("questions.question_id"), nullable=False
     )
 
-    def get_id(self) -> int:
+    def get_id(self) -> uuid.UUID:
         return self.choice_id
 
     def __repr__(self) -> str:
@@ -433,16 +454,18 @@ class Choice(db.Model):
 class Mail(db.Model):
     __tablename__ = "mails"
 
-    mail_id: Mapped[int] = mapped_column(Integer(), primary_key=True)
+    mail_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
 
-    sender_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("users.user_id"), nullable=False
+    sender_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("users.user_id"), nullable=False
     )
     recipients: Mapped[str] = mapped_column(Text(), nullable=False)
     subject: Mapped[str] = mapped_column(String(255), nullable=False)
     content: Mapped[str] = mapped_column(Text(), nullable=False)
 
-    def get_id(self) -> int:
+    def get_id(self) -> uuid.UUID:
         return self.mail_id
 
     def __repr__(self) -> str:
@@ -452,11 +475,13 @@ class Mail(db.Model):
 class AuditLog(db.Model):
     __tablename__ = "audit_logs"
 
-    audit_log_id: Mapped[int] = mapped_column(Integer(), primary_key=True)
+    audit_log_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), primary_key=True, default=uuid.uuid4
+    )
 
     # Who
-    user_id: Mapped[int] = mapped_column(
-        Integer(), ForeignKey("users.user_id"), nullable=False
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("users.user_id"), nullable=False
     )
     # When
     timestamp: Mapped[datetime] = mapped_column(default=datetime.now)

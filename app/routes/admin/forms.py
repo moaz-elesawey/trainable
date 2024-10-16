@@ -9,8 +9,8 @@ from wtforms import (
 from wtforms.widgets import ListWidget, CheckboxInput
 from wtforms.validators import DataRequired, Length
 from sqlalchemy import select
-from .. import db
-from ..models import Group, Permission
+from ... import db
+from ...models import Group, Permission
 
 
 empty_option = [("", "-------")]
