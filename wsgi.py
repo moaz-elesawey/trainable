@@ -9,4 +9,4 @@ app = create_app(config=config)
 
 if __name__ == "__main__":
     init_db_data(app=app)
-    app.run()
+    app.run(host="0.0.0.0", port=80)

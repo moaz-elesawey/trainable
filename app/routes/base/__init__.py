@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, url_for, redirect, flash
+from flask import Blueprint, render_template, url_for, redirect, flash, jsonify
 from flask_login import login_required, current_user
 from sqlalchemy import select
 from ... import db
@@ -6,6 +6,11 @@ from ...models import User, Course, UserCourse, CourseLesson
 
 
 bp = Blueprint("base", __name__, template_folder="templates")
+
+
+@bp.route("/health-check")
+def health_check():
+    return jsonify({"msg": "Ok"})
 
 
 @bp.route("/")
