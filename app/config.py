@@ -1,9 +1,9 @@
 import os
 from functools import lru_cache
+
 from dotenv import load_dotenv
 
 from .utils import assemble_database_url
-
 
 load_dotenv()
 

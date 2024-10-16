@@ -1,21 +1,23 @@
 from datetime import datetime
+
 from flask import (
     Blueprint,
-    request,
-    redirect,
-    url_for,
-    render_template,
     flash,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
+from flask import (
     current_app as app,
 )
 from flask_login import current_user
-from sqlalchemy import select, or_, delete
-from ... import db, bcrypt
-from ... import utils, consts
-from .forms import RegisterNewUserForm, AssignUserPermissionsForm
-from ...models import User, UserPermission
-from ...decorators import superuser_required, permission_required
+from sqlalchemy import delete, or_, select
 
+from ... import bcrypt, consts, db, utils
+from ...decorators import permission_required, superuser_required
+from ...models import User, UserPermission
+from .forms import AssignUserPermissionsForm, RegisterNewUserForm
 
 bp = Blueprint("admin", __name__, template_folder="templates")
 
@@ -80,19 +82,15 @@ def panel():
     q_user = request.args.get("q_user", "")
 
     users = db.session.execute(
-        (
-            select(
-                User.user_id,
-                User.fullname,
-                User.is_active,
-                User.is_staff,
-                User.is_superuser,
-            )
-            .select_from(User)
-            .filter(
-                or_(User.username.icontains(q_user), User.fullname.icontains(q_user))
-            )
+        select(
+            User.user_id,
+            User.fullname,
+            User.is_active,
+            User.is_staff,
+            User.is_superuser,
         )
+        .select_from(User)
+        .filter(or_(User.username.icontains(q_user), User.fullname.icontains(q_user)))
     )
 
     return render_template(

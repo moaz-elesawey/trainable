@@ -1,25 +1,26 @@
 from flask import (
     Blueprint,
-    request,
-    redirect,
-    url_for,
-    render_template,
     flash,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
+from flask import (
     current_app as app,
 )
 from flask_login import current_user
 from sqlalchemy import select
-from ... import db
-from ... import consts
-from ...decorators import staff_user_required, permission_required
-from .forms import (
-    NewCourseForm,
-    AssignUserCourseForm,
-    NewLessonForm,
-    AssignCourseLessonForm,
-)
-from ...models import Course, User, UserCourse, Lesson, CourseLesson
 
+from ... import consts, db
+from ...decorators import permission_required, staff_user_required
+from ...models import Course, CourseLesson, Lesson, User, UserCourse
+from .forms import (
+    AssignCourseLessonForm,
+    AssignUserCourseForm,
+    NewCourseForm,
+    NewLessonForm,
+)
 
 bp = Blueprint("staff", __name__, template_folder="templates")
 

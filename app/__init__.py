@@ -1,10 +1,9 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
 from flask_bcrypt import Bcrypt
-from flask_migrate import Migrate
 from flask_ckeditor import CKEditor
-
+from flask_login import LoginManager
+from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -55,10 +54,7 @@ def initialize_app_extentions(app: Flask) -> None:
 def register_app_blueprints(app: Flask) -> None:
     """Register Blueprints"""
 
-    from .routes import base
-    from .routes import auth
-    from .routes import admin
-    from .routes import staff
+    from .routes import admin, auth, base, staff
 
     # Register Blueprints
     app.register_blueprint(base.bp, url_prefix="/")
@@ -69,4 +65,4 @@ def register_app_blueprints(app: Flask) -> None:
 
 def configure_app_logger(app: Flask) -> None:
     """Configure Flask application logger"""
-    pass
+    _app = app

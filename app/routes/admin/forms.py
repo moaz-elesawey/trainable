@@ -1,17 +1,17 @@
 from flask_wtf import FlaskForm
+from sqlalchemy import select
 from wtforms import (
-    StringField,
     BooleanField,
     SelectField,
     SelectMultipleField,
+    StringField,
     SubmitField,
 )
-from wtforms.widgets import ListWidget, CheckboxInput
 from wtforms.validators import DataRequired, Length
-from sqlalchemy import select
+from wtforms.widgets import CheckboxInput, ListWidget
+
 from ... import db
 from ...models import Group, Permission
-
 
 empty_option = [("", "-------")]
 

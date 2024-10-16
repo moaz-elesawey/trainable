@@ -1,10 +1,10 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import String, ForeignKey, Text, Integer, PrimaryKeyConstraint
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.dialects import postgresql as pg
 from flask_login import UserMixin
+from sqlalchemy import ForeignKey, Integer, PrimaryKeyConstraint, String, Text
+from sqlalchemy.dialects import postgresql as pg
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from . import db, login_manager
 

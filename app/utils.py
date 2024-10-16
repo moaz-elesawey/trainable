@@ -6,14 +6,7 @@ def assemble_database_url(
 ) -> str:
     """Assemble Database URL"""
 
-    conn_string = "{}://{}:{}@{}:{}/{}".format(
-        quote(driver),
-        quote(user),
-        quote(password),
-        quote(host),
-        port,
-        quote(database),
-    )
+    conn_string = f"{quote(driver)}://{quote(user)}:{quote(password)}@{quote(host)}:{port}/{quote(database)}"
 
     return conn_string
 

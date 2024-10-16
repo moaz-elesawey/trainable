@@ -1,9 +1,9 @@
 from flask import Flask
-from sqlalchemy import select, or_
+from sqlalchemy import or_, select
 
-from . import db, bcrypt
+from . import bcrypt, db
 from .consts import PERMISSIONS
-from .models import User, Group, Permission
+from .models import Group, Permission, User
 
 
 def init_db_data(app: Flask) -> None:

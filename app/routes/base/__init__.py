@@ -1,9 +1,9 @@
-from flask import Blueprint, render_template, url_for, redirect, flash, jsonify
-from flask_login import login_required, current_user
+from flask import Blueprint, flash, jsonify, redirect, render_template, url_for
+from flask_login import current_user, login_required
 from sqlalchemy import select
-from ... import db
-from ...models import User, Course, UserCourse, CourseLesson
 
+from ... import db
+from ...models import Course, CourseLesson, User, UserCourse
 
 bp = Blueprint("base", __name__, template_folder="templates")
 

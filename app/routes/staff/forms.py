@@ -1,16 +1,16 @@
+from flask_ckeditor import CKEditorField
 from flask_wtf import FlaskForm
+from sqlalchemy import not_, select
 from wtforms import (
-    StringField,
     SelectField,
-    TextAreaField,
+    StringField,
     SubmitField,
+    TextAreaField,
 )
 from wtforms.validators import DataRequired, Length
-from flask_ckeditor import CKEditorField
-from sqlalchemy import select, not_
-from ... import db
-from ...models import Course, User, Lesson
 
+from ... import db
+from ...models import Course, Lesson, User
 
 empty_option = [("", "-------")]
 

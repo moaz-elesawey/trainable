@@ -1,12 +1,11 @@
 from flask_wtf import FlaskForm
 from wtforms import (
-    StringField,
-    PasswordField,
     BooleanField,
+    PasswordField,
+    StringField,
     SubmitField,
 )
-from wtforms.validators import DataRequired, Length, EqualTo
-
+from wtforms.validators import DataRequired, EqualTo, Length
 
 empty_option = [("", "-------")]
 

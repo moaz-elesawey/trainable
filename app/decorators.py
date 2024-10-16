@@ -1,9 +1,11 @@
+from functools import wraps
+
 from flask import flash, redirect, url_for
 from flask_login import current_user
-from functools import wraps
 from sqlalchemy import select
-from .models import Permission, UserPermission
+
 from . import db
+from .models import Permission, UserPermission
 
 
 def superuser_required(f):

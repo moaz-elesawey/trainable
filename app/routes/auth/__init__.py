@@ -1,22 +1,23 @@
-from typing import Any
 from datetime import datetime
-from sqlalchemy import select, update
+from typing import Any
+
 from flask import (
     Blueprint,
-    request,
-    render_template,
-    redirect,
-    url_for,
     flash,
+    redirect,
+    render_template,
+    request,
+    url_for,
+)
+from flask import (
     current_app as app,
 )
-from flask_login import logout_user, login_user, login_required, current_user
+from flask_login import current_user, login_required, login_user, logout_user
+from sqlalchemy import select, update
 
-from ... import db, bcrypt
-from .forms import LoginForm, ChangePasswordForm
+from ... import bcrypt, db, utils
 from ...models import User
-from ... import utils
-
+from .forms import ChangePasswordForm, LoginForm
 
 bp = Blueprint("auth", __name__, template_folder="templates")
 

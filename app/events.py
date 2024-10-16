@@ -1,23 +1,24 @@
 import uuid
-from sqlalchemy import event
+
 from flask_login import current_user
-from sqlalchemy import insert
+from sqlalchemy import event, insert
+
 from . import utils
 from .models import (
-    User,
-    UserPermission,
-    Course,
-    UserCourse,
     Assessment,
-    CourseAssessment,
-    UserAssessment,
-    Lesson,
-    CourseLesson,
-    Question,
     AssessmentQuestion,
-    UserAssessmentQuestion,
-    Choice,
     AuditLog,
+    Choice,
+    Course,
+    CourseAssessment,
+    CourseLesson,
+    Lesson,
+    Question,
+    User,
+    UserAssessment,
+    UserAssessmentQuestion,
+    UserCourse,
+    UserPermission,
 )
 
 
@@ -35,6 +36,7 @@ def get_target_id_str(target) -> str:
 
 def after_insert_listener(mapper, connection, target):
     """Hook to run after each insert statement."""
+    _mapper = mapper
 
     if current_user is not None:
         return
@@ -52,6 +54,7 @@ def after_insert_listener(mapper, connection, target):
 
 def after_update_listener(mapper, connection, target):
     """Hook to run after each update statement."""
+    _mapper = mapper
 
     if current_user is not None:
         return
