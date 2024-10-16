@@ -1,35 +1,43 @@
 
-# Traintable | Your Training Platform
+# Traintable
+
+Your Training Platform
 
 
-Traintable is a System written in Python and shipped with a standalone API.
-
-Develpment
-===
-
-Reset PostgreSQL Database
+To start the application in dev mode use:
 ```sh
-$ docker stop pg-trainable
-$ docker rm pg-trainable
-$ docker volume rm pg-trainable-data
+$ docker compose -p trainble watch
 ```
 
-Start PostgreSQL Database instance in docker with the following command.
+this command watches for any changes in application files and reload the app.
+
+
+To connect to the database you can go to [adminer](0.0.0.0:8080) which redirect to adminer which is a simple interface to manage databases.
+
+You can connect to the database using the credientials specified in the `.env` file.
+
+Or if you prefer cli tool like me you can use the greatest `pgcli` using the following command
+
 ```sh
-$ docker run --name pg-trainable \
-    -it -d -p 54322:5432 \
-    -e POSTGRES_USER='postgres' \
-    -e POSTGRES_PASSWORD='P@ssw0rd' \
-    -e POSTGRES_DB='trainable' \
-    -v pg-trainable-data:/var/lib/postgresql \
-    postgres:16
+$ pgcli -h 127.0.0.1 -p 5432 -Upostgres -d trainable -W
 ```
 
-Exec into the PostgreSQL Database instance
+
+To view the logs of the `webapp` use
+
 ```sh
-$ docker exec -it pg-trainable bash
+$ docker compose -p trainable logs webapp -f
 ```
 
-View the logs of the db instance
-```sh
-$ docker logs pg-trainable -f -n 10
+Development
+---
+Refer to [Development](./development.md)
+
+
+Deployment
+---
+Refer to [Deployment](./deployment.md)
+
+Credit
+---
+This work of `docker` and `docker compose` is based on [full-stack-fastapi-template](https://github.com/fastapi/full-stack-fastapi-template.git) by tiagolog and fastapi.
