@@ -3,12 +3,10 @@ from sqlalchemy import select
 from wtforms import (
     BooleanField,
     SelectField,
-    SelectMultipleField,
     StringField,
     SubmitField,
 )
-from wtforms.validators import DataRequired, Length
-from wtforms.widgets import CheckboxInput, ListWidget
+from wtforms.validators import UUID, DataRequired, Length
 
 from ... import db
 from ...models import Group, Permission
@@ -35,17 +33,16 @@ class RegisterNewUserForm(FlaskForm):
         ]
 
 
-class AssignUserPermissionsForm(FlaskForm):
-    permissions = SelectMultipleField(
-        "Permissions",
-        widget=ListWidget(prefix_label=True),
-        option_widget=CheckboxInput(),
+class AssignUserPermissionForm(FlaskForm):
+    permission = SelectField(
+        "Permission", validators=[UUID(message="Choose Valid Permission")]
     )
     submit = SubmitField("Submit")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         db_permissions = db.session.execute(select(Permission)).scalars()
-        self.permissions.choices = [
-            (str(p.permission_id), f"{p.name}: {p.description}") for p in db_permissions
+        self.permission.choices = [
+            (str(permission.permission_id), permission.name)
+            for permission in db_permissions
         ]

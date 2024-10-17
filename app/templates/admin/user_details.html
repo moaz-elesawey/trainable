@@ -1,0 +1,132 @@
+{% extends 'admin/base.html' %} {% block admin_content %}
+
+<div class="row">
+  <div class="col-12 col-sm-12 col-md-9 col-lg-9 m-auto">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title border-bottom py-2">{{ user.fullname }}</h5>
+        <div class="card-text">
+          <div class="row">
+            <div class="col-12 col-sm-12 col-md-4 col-lg-4 mb-3">
+              <img
+                src="{{ url_for('static', filename='assets/default-profile.webp') }}"
+                alt="Profile Pic"
+                class="img-fluid border rounded"
+              />
+            </div>
+            <div class="col-12 col-sm-12 col-md-8 col-lg-8 mb-3">
+              <div class="mb-3">
+                <label for="fullname" class="form-label">Fullname</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  value="{{ user.fullname }}"
+                  readonly
+                />
+              </div>
+              <div class="row">
+                <div class="col-12 col-sm-12 col-md-4 col-lg-4">
+                  <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input
+                      id="username"
+                      type="text"
+                      class="form-control"
+                      value="{{ user.username }}"
+                      readonly
+                    />
+                  </div>
+                </div>
+                <div class="col-12 col-sm-12 col-md-8 col-lg-8">
+                  <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input
+                      id="email"
+                      type="text"
+                      class="form-control"
+                      value="moazelessawey@gmail.com"
+                      readonly
+                    />
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="permissions">Permissions</label>
+                  <div class="border rounded p-2">
+                    {% if user_permissions %}
+                    <table
+                      class="table mb-0 table-sm align-middle table-striped"
+                    >
+                      <thead>
+                        <tr>
+                          <th>#</th>
+                          <th>Permission</th>
+                          <th>On</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for perm, user_perm in user_permissions %}
+                        <tr>
+                          <td>{{ loop.index }}</td>
+                          <td>{{ perm.name }}</td>
+                          <td>
+                            {{ user_perm.assigned_at.strftime('%Y-%m-%d %H:%M
+                            %p') }}
+                          </td>
+                          <td>
+                            <a
+                              href="{{ url_for('admin.delete_user_permission', user_id=user.user_id, permission_id=perm.permission_id) }}"
+                              class="btn btn-sm btn-danger"
+                              >Delete</a
+                            >
+                          </td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                    {% else %}
+                    <span>No Permissions Assigned Yet.</span>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="last_login">Last Login</label>
+                  <input
+                    id="last_login"
+                    type="text"
+                    value="{{ user.last_login.strftime('%Y-%m-%d %H:%M %p') }}"
+                    class="form-control"
+                    readonly
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="last_login">Roles</label>
+                  <div class="border rounded p-2">
+                    <div
+                      class="d-flex justify-content-start align-items-center flex-wrap"
+                    >
+                      <span
+                        class="badge bg-{% if user.is_active %}success{% else %}danger{% endif %} me-2"
+                        >Active</span
+                      >
+                      <span
+                        class="badge bg-{% if user.is_staff %}success{% else %}danger{% endif %} me-2"
+                        >Moderator</span
+                      >
+                      <span
+                        class="badge bg-{% if user.is_superuser %}success{% else %}danger{% endif %} me-2"
+                        >Superuser</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

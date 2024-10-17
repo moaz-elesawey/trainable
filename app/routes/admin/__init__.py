@@ -12,12 +12,12 @@ from flask import (
     current_app as app,
 )
 from flask_login import current_user
-from sqlalchemy import delete, or_, select
+from sqlalchemy import not_, or_, select
 
 from ... import bcrypt, consts, db, utils
 from ...decorators import permission_required, superuser_required
-from ...models import User, UserPermission
-from .forms import AssignUserPermissionsForm, RegisterNewUserForm
+from ...models import Permission, User, UserPermission
+from .forms import AssignUserPermissionForm, RegisterNewUserForm
 
 bp = Blueprint("admin", __name__, template_folder="templates")
 
@@ -98,54 +98,150 @@ def panel():
     )
 
 
-@bp.route("/assgin-user-permissions/<string:user_id>", methods=["GET", "POST"])
+@bp.route("/assgin-user-permission/<string:user_id>", methods=["GET", "POST"])
 @superuser_required
-def assign_user_permissions(user_id: str):
-    form = AssignUserPermissionsForm()
+def assign_user_permission(user_id: str):
+    form = AssignUserPermissionForm()
 
     user = db.session.get(User, ident=user_id)
-    db.session.commit()
 
     if not user:
         flash(f"User with id: {user_id} does not exist.", "warning")
         return redirect(url_for("admin.panel"))
 
-    db_permissions = []
+    user_permissions = [
+        row[0]
+        for row in db.session.execute(
+            select(Permission)
+            .join(UserPermission)
+            .filter(UserPermission.user_id == user_id)
+        ).all()
+    ]
 
-    if request.method == utils.GET:
-        form.permissions.data = [str(p.permission_id) for p in user.permissions]
-
-    if form.validate_on_submit():
-        permissions = form.permissions.data
-
-        for permission_id in permissions:
-            db_permissions.append(
-                UserPermission(
-                    user_id=user_id,
-                    permission_id=permission_id,
-                    assigned_by_id=current_user.get_id(),
+    unassigned_permissions = db.session.execute(
+        select(
+            Permission,
+        ).filter(
+            not_(
+                Permission.permission_id.in_(
+                    set({user_perm.permission_id for user_perm in user_permissions})
                 )
             )
+        )
+    ).scalars()
+
+    permission_choices = [
+        (str(perm.permission_id), perm.name) for perm in unassigned_permissions
+    ]
+    print(permission_choices)
+    form.permission.choices = permission_choices
+
+    if form.validate_on_submit():
+        permission_id = form.permission.data
+
+        db_permission = db.session.get(Permission, ident=permission_id)
+
+        if not db_permission:
+            flash("Permission with this id is not found", "warning")
+            return redirect(url_for("admin.assign_user_permission", user_id=user_id))
+
+        if db.session.get(UserPermission, ident=(user_id, permission_id)):
+            flash(
+                f"Permission <b>{db_permission.name}</b> is already assigned to <b>{user.fullname}</b>",
+                "info",
+            )
+            return redirect(url_for("admin.assign_user_permission", user_id=user_id))
+
+        user_permission = UserPermission(
+            user_id=user_id,
+            permission_id=permission_id,
+            assigned_by_id=current_user.get_id(),
+        )
 
         try:
-            db.session.execute(
-                delete(UserPermission).where(UserPermission.user_id == user.user_id)
-            )
-            db.session.add_all(db_permissions)
+            db.session.add(user_permission)
             flash(
-                f"Permissions assigned successfully for <b>{user.fullname}</b>.",
+                f"Permission <b>{db_permission.name}</b> assigned successfully for <b>{user.fullname}</b>.",
                 "info",
             )
             db.session.commit()
-            return redirect(url_for("admin.panel"))
+            return redirect(url_for("admin.assign_user_permission", user_id=user_id))
         except Exception as e:
             db.session.rollback()
             app.logger.error(str(e))
             flash("Something went wrong, Please try again later.", "danger")
 
     return render_template(
-        "admin/assign_user_permissions.html",
+        "admin/assign_user_permission.html",
         form=form,
         user=user,
+        user_permissions=user_permissions,
         title="Assign Permissions",
     )
+
+
+@bp.route("/user-details/<string:user_id>")
+@superuser_required
+def user_details(user_id: str):
+    user = db.session.get(User, ident=user_id)
+
+    if not user:
+        flash(f"User with id: {user_id} does not exist.", "warning")
+        return redirect(url_for("admin.panel"))
+
+    user_permissions = db.session.execute(
+        select(
+            Permission,
+            UserPermission,
+        )
+        .select_from(Permission)
+        .join(UserPermission)
+        .filter(UserPermission.user_id == user_id)
+    ).all()
+
+    return render_template(
+        "admin/user_details.html", user=user, user_permissions=user_permissions
+    )
+
+
+@bp.route(
+    "/delete-user-permission/<string:user_id>/permission/<string:permission_id>",
+    methods=["GET", "POST"],
+)
+@superuser_required
+def delete_user_permission(user_id: str, permission_id: str):
+    user = db.session.get(User, ident=user_id)
+
+    if not user:
+        flash(f"User with id: {user_id} does not exist.", "warning")
+        return redirect(url_for("admin.panel"))
+
+    permission = db.session.get(Permission, ident=permission_id)
+
+    if not permission:
+        flash(f"Permission with id: {permission_id} does not exist.", "warning")
+        return redirect(url_for("admin.panel"))
+
+    user_permission = db.session.get(UserPermission, ident=(user_id, permission_id))
+
+    if not user_permission:
+        flash(
+            f"Permission <b>{permission.name}</b> is not assigned to <b>{user.fullname}</b>",
+            "warning",
+        )
+        return redirect(url_for("admin.panel"))
+
+    try:
+        db.session.delete(user_permission)
+        flash(
+            f"Permission <b>{permission.name}</b> removed from  <b>{user.fullname}</b>",
+            "info",
+        )
+        db.session.commit()
+        return redirect(url_for("admin.user_details", user_id=user.user_id))
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(str(e))
+        flash("Something went wrong, Please try again later.", "danger")
+
+    return redirect(url_for("admin.panel"))

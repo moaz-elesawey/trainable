@@ -1,5 +1,5 @@
 {% extends 'admin/base.html' %}
-{% from 'form_helpers.html' import render_form_check %}
+{% from 'form_helpers.html' import render_form_check, render_form_select %}
 
 {% block admin_content %}
 
@@ -11,30 +11,29 @@
           Assign User Permissions
         </h4>
         <form method='post', action="">
+          {{ form.hidden_tag() }}
+
           <div class="mb-3">
             <label for="assign_permissions__fullname" class='form-control-label'>User</label>
             <input 
               type="text" name="" value="{{ user.fullname }}" 
               id='assign_permissions__fullname' class='form-control' readonly />
           </div>
-          {{ form.hidden_tag() }}
           
-          <table class='table table-sm'>
-            <thead>
-            <tr>
-              <th>#</th>
-              <th>Permission</th>
-            </tr>
-            </thead>
-            <tbody style='max-height: 2rem;'>
-              {% for perm in form.permissions %}
-                <tr>
-                  <td>{{ perm() }}</td>
-                  <td>{{ perm.label() }}</td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+          <div class="mb-3">
+            <label for="assign_permissions__permissions" class='form-control-label'>Permissions</label>
+            <div class="border rounded p-2">
+              {% if user_permissions %}
+                {% for perm in user_permissions %}
+                  <span class="badge bg-secondary me-1">{{perm.name}}</span>
+                {% endfor %}
+              </div>
+              {% else %}
+                No Permissions Assigned Yet.
+              {% endif %}
+          </div>
+
+          {{ render_form_select(form.permission, id='permission') }}
 
           <div class="border-bottom my-3"></div>
           {{ form.submit(class='btn btn-primary w-100') }}
