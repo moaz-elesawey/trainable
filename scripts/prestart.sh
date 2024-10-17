@@ -1,9 +1,8 @@
 #!/usr/bin/sh
 set -e
 
-echo "Trainable Prestart..."
-
-# Upgrading the database
+echo "Upgrading Database..."
 flask db upgrade
+echo "Database Upgraded Successfully."
 
-echo "Database Migrate..."
+python /app/initialize_data.py

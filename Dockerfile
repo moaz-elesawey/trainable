@@ -37,6 +37,7 @@ COPY ./pyproject.toml ./uv.lock /app/
 
 COPY ./app /app/app
 
+COPY ./initialize_data.py /app/
 COPY ./wsgi.py /app/
 
 # Sync the project
