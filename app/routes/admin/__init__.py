@@ -130,11 +130,9 @@ def assign_user_permission(user_id: str):
         )
     ).scalars()
 
-    permission_choices = [
+    form.permission.choices = [
         (str(perm.permission_id), perm.name) for perm in unassigned_permissions
     ]
-    print(permission_choices)
-    form.permission.choices = permission_choices
 
     if form.validate_on_submit():
         permission_id = form.permission.data

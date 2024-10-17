@@ -3,4 +3,5 @@ instance/
 uv.lock
 .venv/
 .ruff_cache/
+.env
 docs/
