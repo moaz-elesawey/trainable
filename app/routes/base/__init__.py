@@ -1,9 +1,9 @@
-from flask import Blueprint, flash, jsonify, redirect, render_template, url_for
+from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
-from sqlalchemy import select
+from sqlalchemy import and_, select
 
 from ... import db
-from ...models import Course, CourseLesson, User, UserCourse
+from ...models import Assessment, Course, CourseLesson, User, UserAssessment, UserCourse
 
 bp = Blueprint("base", __name__, template_folder="templates")
 
@@ -42,8 +42,11 @@ def course(course_id):
         return redirect(url_for("base.home"))
 
     course = db.session.get(Course, ident=course_id)
+    user_course = db.session.get(UserCourse, ident=(current_user.user_id, course_id))
 
-    return render_template("base/course.html", course=course, title="Course")
+    return render_template(
+        "base/course.html", course=course, user_course=user_course, title="Course"
+    )
 
 
 @bp.route("/course/<string:course_id>/lesson/<string:lesson_id>")
@@ -61,6 +64,39 @@ def course_lesson(course_id: str, lesson_id: str):
 
     return render_template(
         "base/course_lesson.html", course_lesson=course_lesson, title="Couse Lesson"
+    )
+
+
+@bp.route("/dashboard")
+@login_required
+def dashboard():
+    q_courses = request.args.get("q_courses", "")
+
+    user_courses = db.session.execute(
+        select(Course)
+        .select_from(Course)
+        .join(UserCourse)
+        .filter(
+            and_(
+                UserCourse.user_id == current_user.user_id,
+                Course.name.icontains(q_courses),
+            )
+        )
+    ).scalars()
+
+    user_assessments = db.session.execute(
+        select(Assessment)
+        .select_from(Assessment)
+        .join(UserAssessment)
+        .filter(UserAssessment.user_id == current_user.user_id)
+    ).scalars()
+
+    return render_template(
+        "base/dashboard.html",
+        user_courses=user_courses,
+        user_assessments=user_assessments,
+        q_courses=q_courses,
+        title="Dashboard",
     )
 
 
