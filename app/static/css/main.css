@@ -105,3 +105,7 @@
   font-weight: 900;
   font-style: italic;
 }
+
+.tox-promotion {
+  display: none;
+}

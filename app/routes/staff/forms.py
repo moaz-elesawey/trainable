@@ -1,4 +1,3 @@
-from flask_ckeditor import CKEditorField
 from flask_wtf import FlaskForm
 from sqlalchemy import not_, select
 from wtforms import (
@@ -18,7 +17,7 @@ empty_option = [("", "-------")]
 class NewCourseForm(FlaskForm):
     name = StringField("Title", validators=[DataRequired(), Length(min=1, max=255)])
     summary = TextAreaField("Summary")
-    content = CKEditorField("Content")
+    content = TextAreaField("Content")
     submit = SubmitField("Submit")
 
 
@@ -47,7 +46,7 @@ class AssignUserCourseForm(FlaskForm):
 
 class NewLessonForm(FlaskForm):
     name = StringField("Title", validators=[DataRequired(), Length(min=1, max=255)])
-    content = CKEditorField("Content")
+    content = TextAreaField("Content")
     submit = SubmitField("Submit")
 
 
