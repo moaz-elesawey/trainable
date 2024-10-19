@@ -38,7 +38,7 @@ def after_insert_listener(mapper, connection, target):
     """Hook to run after each insert statement."""
     _mapper = mapper
 
-    if current_user is not None:
+    if current_user is None:
         return
 
     connection.execute(
@@ -56,7 +56,7 @@ def after_update_listener(mapper, connection, target):
     """Hook to run after each update statement."""
     _mapper = mapper
 
-    if current_user is not None:
+    if current_user is None:
         return
 
     connection.execute(
