@@ -2,7 +2,15 @@ import uuid
 from datetime import datetime
 
 from flask_login import UserMixin
-from sqlalchemy import ForeignKey, Integer, PrimaryKeyConstraint, String, Text
+from sqlalchemy import (
+    Boolean,
+    DateTime,
+    ForeignKey,
+    Integer,
+    PrimaryKeyConstraint,
+    String,
+    Text,
+)
 from sqlalchemy.dialects import postgresql as pg
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -92,8 +100,11 @@ class Profile(db.Model):
     )
 
     title: Mapped[str] = mapped_column(String(255))
+
     age: Mapped[int] = mapped_column(Integer())
+
     years_of_experience: Mapped[int] = mapped_column(Integer())
+
     profile_picture: Mapped[str] = mapped_column(String(255))
 
     user_id: Mapped[uuid.UUID] = mapped_column(
@@ -249,6 +260,46 @@ class Lesson(db.Model):
         return f"Lesson<{self.name!r}>"
 
 
+class UserCourseLesson(db.Model):
+    __tablename__ = "user_course_lessons"
+
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("users.user_id"), nullable=False
+    )
+    course_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("courses.course_id"), nullable=False
+    )
+    lesson_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("lessons.lesson_id"), nullable=False
+    )
+
+    first_access_at: Mapped[datetime] = mapped_column(DateTime(), default=datetime.now)
+
+    last_access_at: Mapped[datetime] = mapped_column(DateTime(), onupdate=datetime.now)
+
+    is_accessed: Mapped[bool] = mapped_column(Boolean(), default=False)
+
+    is_marked_completed: Mapped[bool] = mapped_column(Boolean(), default=False)
+
+    is_marked_skiped: Mapped[bool] = mapped_column(Boolean(), default=False)
+
+    mark_completed_at: Mapped[datetime] = mapped_column(DateTime(), nullable=True)
+
+    mark_skiped_at: Mapped[datetime] = mapped_column(DateTime(), nullable=True)
+
+    opened_at: Mapped[datetime] = mapped_column(DateTime(), nullable=True)
+
+    closed_at: Mapped[datetime] = mapped_column(DateTime(), nullable=True)
+
+    __table_args__ = (PrimaryKeyConstraint("user_id", "course_id", "lesson_id"),)
+
+    def get_id(self) -> tuple[uuid.UUID]:
+        return (self.user_id, self.course_id, self.lesson_id)
+
+    def __repr__(self) -> str:
+        return f"UserCourseLesson<{self.user_id}, {self.course_id}, {self.lesson_id}>"
+
+
 class CourseLesson(db.Model):
     __tablename__ = "course_lessons"
 
@@ -271,6 +322,10 @@ class CourseLesson(db.Model):
         foreign_keys=[lesson_id], back_populates="courses"
     )
 
+    # Index of lesson in the course
+    # TODO: will serve a role in re arraning of lessons.
+    index: Mapped[int] = mapped_column(Integer(), nullable=True, default=1)
+
     __table_args__ = (PrimaryKeyConstraint("course_id", "lesson_id"),)
 
     def get_id(self) -> tuple[uuid.UUID]:
@@ -285,7 +340,13 @@ class Assessment(db.Model):
     )
 
     name: Mapped[str] = mapped_column(String(255), nullable=False)
+
     summary: Mapped[str] = mapped_column(Text(), nullable=True, default="N/A")
+
+    duration_in_minutes: Mapped[int] = mapped_column(
+        Integer(), nullable=True, default=30
+    )
+
     questions: Mapped[list["AssessmentQuestion"]] = relationship()
 
     def get_id(self) -> uuid.UUID:
@@ -332,9 +393,13 @@ class UserAssessment(db.Model):
     )
 
     started_at: Mapped[datetime] = mapped_column(nullable=True)
+
     completed_at: Mapped[datetime] = mapped_column(nullable=True)
+
     is_on_hold: Mapped[datetime] = mapped_column(default=False)
+
     is_started: Mapped[bool] = mapped_column(default=False)
+
     is_completed: Mapped[bool] = mapped_column(default=False)
 
     __table_args__ = (PrimaryKeyConstraint("user_id", "assessment_id"),)
@@ -353,6 +418,7 @@ class Question(db.Model):
     )
 
     question: Mapped[str] = mapped_column(String(255), nullable=False)
+
     type: Mapped[str] = mapped_column(String(255), nullable=False)
 
     choices: Mapped[list["Choice"]] = relationship()
@@ -396,9 +462,11 @@ class AssessmentQuestion(db.Model):
     )
 
     assigned_at: Mapped[datetime] = mapped_column(default=datetime.now)
+
     assigned_by_id: Mapped[uuid.UUID] = mapped_column(
         pg.UUID(as_uuid=True), ForeignKey("users.user_id"), nullable=False
     )
+
     __table_args__ = (PrimaryKeyConstraint("assessment_id", "question_id"),)
 
     def get_id(self) -> tuple[uuid.UUID]:
@@ -420,9 +488,16 @@ class UserAssessmentQuestion(db.Model):
         pg.UUID(as_uuid=True), ForeignKey("questions.question_id"), nullable=False
     )
 
+    opened_at: Mapped[datetime] = mapped_column(DateTime(), nullable=True)
+
+    closed_at: Mapped[datetime] = mapped_column(DateTime(), nullable=True)
+
     completed_at: Mapped[datetime] = mapped_column(nullable=True)
+
     skiped_at: Mapped[datetime] = mapped_column(nullable=True)
+
     is_completed: Mapped[bool] = mapped_column(default=False)
+
     is_skiped: Mapped[bool] = mapped_column(default=False)
 
     __table_args__ = (PrimaryKeyConstraint("user_id", "assessment_id", "question_id"),)
