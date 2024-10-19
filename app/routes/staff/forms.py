@@ -6,7 +6,7 @@ from wtforms import (
     SubmitField,
     TextAreaField,
 )
-from wtforms.validators import DataRequired, Length
+from wtforms.validators import UUID, DataRequired, Length
 
 from ... import db
 from ...models import Course, Lesson, User
@@ -51,7 +51,7 @@ class NewLessonForm(FlaskForm):
 
 
 class AssignCourseLessonForm(FlaskForm):
-    lesson = SelectField("Lesson", validators=[])
+    lesson = SelectField("Lesson", validators=[UUID(message="Select valid lesson")])
     submit = SubmitField("Submit")
 
     def __init__(self, *args, **kwargs):
