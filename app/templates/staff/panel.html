@@ -31,14 +31,19 @@
     <tr>
       <td>{{ loop.index }}</td>
       <td>{{ course.name }}</td>
-      <td>{{ course.enrolled_count }}</td>
-      <td>{{ course.lessons.__len__() }}</td>
+      <td>{{ course.enrolled_count }} User(s)</td>
+      <td>{{ course.lessons.__len__() }} Lesson(s)</td>
       <td>
         <div class="btn-group">
           <a 
             class='btn btn-sm btn-primary' 
             href="{{ url_for('staff.assign_course_lesson', course_id=course.course_id) }}"
-          >Assign Lessons</a>
+          >Details</a>
+        <a 
+            class='btn btn-sm btn-info' 
+            href="{{ url_for('staff.assign_course_lesson', course_id=course.course_id) }}"
+          >Assign Users</a>
+        </div>
         </div>
       </td>
     </tr>

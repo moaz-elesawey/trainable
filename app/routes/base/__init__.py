@@ -1,6 +1,6 @@
 from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
-from sqlalchemy import and_, select
+from sqlalchemy import and_, desc, select
 
 from ... import db
 from ...models import Assessment, Course, CourseLesson, User, UserAssessment, UserCourse
@@ -26,6 +26,7 @@ def home():
         .join(UserCourse, onclause=(Course.course_id == UserCourse.course_id))
         .join(User, onclause=(User.user_id == UserCourse.user_id))
         .filter(User.user_id == current_user.get_id())
+        .order_by(desc(UserCourse.assigned_at))
         .distinct()
     )
 
