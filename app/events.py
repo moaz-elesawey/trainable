@@ -38,7 +38,7 @@ def after_insert_listener(mapper, connection, target):
     """Hook to run after each insert statement."""
     _mapper = mapper
 
-    if current_user is None:
+    if not (current_user and current_user.is_authenticated):
         return
 
     connection.execute(
@@ -56,7 +56,7 @@ def after_update_listener(mapper, connection, target):
     """Hook to run after each update statement."""
     _mapper = mapper
 
-    if current_user is None:
+    if not (current_user and current_user.is_authenticated):
         return
 
     connection.execute(
@@ -89,5 +89,5 @@ def register_sa_events() -> None:
     event.listen(Choice, "after_insert", after_insert_listener)
 
     # Register Update Events
-    event.listen(User, "after_update", after_update_listener)
-    event.listen(User, "after_insert", after_insert_listener)
+    # event.listen(User, "after_update", after_update_listener)
+    # event.listen(User, "after_insert", after_insert_listener)
