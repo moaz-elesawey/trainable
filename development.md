@@ -1,8 +1,14 @@
-# FastAPI Project - Development
+# Trainable - Development
 
 ## Docker Compose
 
 * Start the local stack with Docker Compose:
+
+Fetch python packages and create `uv.lock`
+
+```bash
+uv sync
+```
 
 ```bash
 docker compose -p trainable watch

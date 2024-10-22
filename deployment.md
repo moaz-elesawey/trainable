@@ -1,4 +1,4 @@
-# FastAPI Project - Deployment
+# Trainable - Deployment
 
 You can deploy the project using Docker Compose to a remote server.
 
