@@ -6,18 +6,18 @@
 <div class='card pb-0'>
   <div class='card-body p-3'>
     <h5 class="card-title border-bottom text-center poppins-medium pb-3">
-      Assign Course To A User
+      Assign User To A Course
     </h5>
 
     <form method='post' action=''>
         {{ form.hidden_tag() }}
 
         <div class="mb-3">
-          <label for="fullname">Fullname</label>
-          <input type="text" class="form-control readonly" value="{{user.fullname}}" readonly>
+          <label for="course">Course</label>
+          <input type="text" class="form-control readonly" value="{{course.name}}" readonly>
         </div>
 
-        {{ render_form_select(form.course, id='assign_user_course__course') }}
+        {{ render_form_select(form.user, id='assign_course_user__course') }}
 
         <div class="border-bottom my-3"></div>
         {{ form.submit(class='btn btn-primary w-100') }}

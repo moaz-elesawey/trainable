@@ -14,7 +14,6 @@ from .models import (
     CourseLesson,
     Lesson,
     Question,
-    User,
     UserAssessment,
     UserAssessmentQuestion,
     UserCourse,

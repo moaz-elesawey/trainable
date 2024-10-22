@@ -201,6 +201,7 @@ class Course(db.Model):
     )
     lessons: Mapped[list["CourseLesson"]] = relationship(back_populates="course")
     assessment: Mapped["CourseAssessment"] = relationship()
+    attachments: Mapped[list["Attachment"]] = relationship()
 
     def get_id(self) -> uuid.UUID:
         return self.course_id
@@ -330,6 +331,34 @@ class CourseLesson(db.Model):
 
     def get_id(self) -> tuple[uuid.UUID]:
         return (self.course_id, self.lesson_id)
+
+
+class Attachment(db.Model):
+    __tablename__ = "attachments"
+
+    attachment_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), primary_key=True
+    )
+
+    course_id: Mapped[uuid.UUID] = mapped_column(
+        pg.UUID(as_uuid=True), ForeignKey("courses.course_id"), nullable=False
+    )
+
+    name: Mapped[str] = mapped_column(String(255), nullable=False, unique=False)
+
+    old_filename: Mapped[str] = mapped_column(Text(), nullable=False)
+
+    new_filename: Mapped[str] = mapped_column(Text(), nullable=False)
+
+    file_path: Mapped[str] = mapped_column(Text(), nullable=False)
+
+    file_data: Mapped[bytes] = mapped_column(pg.BYTEA(), nullable=False)
+
+    def get_id(self) -> uuid.UUID:
+        return self.attachment_id
+
+    def __repr__(self) -> str:
+        return f"Attachment<{self.attachment_id}, {self.name}>"
 
 
 class Assessment(db.Model):

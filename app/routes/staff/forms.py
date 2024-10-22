@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from sqlalchemy import not_, select
+from sqlalchemy import select
 from wtforms import (
     SelectField,
     StringField,
@@ -22,25 +22,26 @@ class NewCourseForm(FlaskForm):
 
 
 class AssignUserCourseForm(FlaskForm):
-    user = SelectField("User", validators=[])
-    course = SelectField("Course", validators=[])
+    course = SelectField("Course", validators=[UUID(message="Valid user ID required")])
     submit = SubmitField("Submit")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         db_courses = db.session.execute(select(Course).select_from(Course)).scalars()
-        db_users = db.session.execute(
-            select(User)
-            .filter(User.is_active)
-            .filter(not_(User.is_superuser))
-            .select_from(User)
-        ).scalars()
-
         self.course.choices = empty_option + [
-            (str(c.course_id), c.name) for c in db_courses
+            (str(course.course_id), course.name) for course in db_courses
         ]
+
+
+class AssignCourseUserForm(FlaskForm):
+    user = SelectField("User", validators=[UUID(message="Valid course ID required")])
+    submit = SubmitField("Submit")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        db_users = db.session.execute(select(User).select_from(User)).scalars()
         self.user.choices = empty_option + [
-            (str(u.user_id), u.fullname) for u in db_users
+            (str(user.user_id), user.fullname) for user in db_users
         ]
 
 
