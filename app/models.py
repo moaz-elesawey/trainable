@@ -235,6 +235,9 @@ class UserCourse(db.Model):
         pg.UUID(as_uuid=True), ForeignKey("users.user_id"), nullable=False
     )
 
+    is_completed: Mapped[bool] = mapped_column(Boolean(), nullable=True, default=False)
+    completed_at: Mapped[datetime] = mapped_column(DateTime(), nullable=True)
+
     __table_args__ = (PrimaryKeyConstraint("user_id", "course_id"),)
 
     def get_id(self) -> tuple[uuid.UUID]:

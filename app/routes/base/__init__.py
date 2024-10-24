@@ -1,9 +1,21 @@
+from datetime import timedelta
+
 from flask import Blueprint, flash, jsonify, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
-from sqlalchemy import and_, desc, select
+from sqlalchemy import and_, desc, func, select
 
 from ... import db
-from ...models import Assessment, Course, CourseLesson, User, UserAssessment, UserCourse
+from ...models import (
+    Assessment,
+    Course,
+    CourseLesson,
+    User,
+    UserAssessment,
+    UserCourse,
+    UserCourseLesson,
+)
+from ...utils import SECONDS_TO_HOURS
+from .utils import UserMetrics
 
 bp = Blueprint("base", __name__, template_folder="templates")
 
@@ -73,6 +85,43 @@ def course_lesson(course_id: str, lesson_id: str):
 def dashboard():
     q_courses = request.args.get("q_courses", "")
 
+    all_user_courses_count = db.session.execute(
+        select(func.count())
+        .select_from(UserCourse)
+        .filter(UserCourse.user_id == current_user.get_id())
+    ).scalar_one_or_none()
+
+    completed_user_courses_count = db.session.execute(
+        select(func.count())
+        .select_from(UserCourse)
+        .filter(UserCourse.user_id == current_user.get_id())
+        .filter(UserCourse.is_completed)
+    ).scalar_one_or_none()
+
+    all_user_assessments_count = db.session.execute(
+        select(func.count())
+        .select_from(UserAssessment)
+        .filter(UserAssessment.user_id == current_user.get_id())
+        .filter(UserAssessment.is_completed)
+    ).scalar_one_or_none()
+
+    total_learning_hours: timedelta | None = db.session.execute(
+        select(UserCourseLesson.closed_at - UserCourseLesson.opened_at).select_from(
+            UserCourseLesson
+        )
+    ).scalar_one_or_none()
+
+    if total_learning_hours:
+        total_learning_hours = total_learning_hours.total_seconds() * SECONDS_TO_HOURS
+
+    user_metrics = UserMetrics(
+        all_user_courses_count,
+        completed_user_courses_count,
+        all_user_assessments_count,
+        total_learning_hours,
+        3.4,
+    )
+
     user_courses = db.session.execute(
         select(Course)
         .select_from(Course)
@@ -97,6 +146,7 @@ def dashboard():
         user_courses=user_courses,
         user_assessments=user_assessments,
         q_courses=q_courses,
+        user_metrics=user_metrics,
         title="Dashboard",
     )
 

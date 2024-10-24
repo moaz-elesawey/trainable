@@ -15,7 +15,7 @@
   <div class="mb-4 flex-grow-1">
     <div class="card text-bg-light">
       <div class="card-body">
-        <h4 class="card-title text-center">23 Courses</h4>
+        <h4 class="card-title text-center">{{ user_metrics.courses_count }} Courses</h4>
       </div>
       <div class="card-footer text-center">Total Courses</div>
     </div>
@@ -23,7 +23,7 @@
   <div class="mb-4 flex-grow-1">
     <div class="card text-bg-light">
       <div class="card-body">
-        <h4 class="card-title text-center">12 Courses</h4>
+        <h4 class="card-title text-center">{{ user_metrics.completed_courses_count }} Courses</h4>
       </div>
       <div class="card-footer text-center">Taken Courses</div>
     </div>
@@ -31,7 +31,7 @@
   <div class="mb-4 flex-grow-1">
     <div class="card text-bg-light">
       <div class="card-body">
-        <h4 class="card-title text-center">4 Quizes</h4>
+        <h4 class="card-title text-center">{{ user_metrics.assessments_count }} Quizes</h4>
       </div>
       <div class="card-footer text-center">Total Assessment</div>
     </div>
@@ -39,7 +39,7 @@
   <div class="mb-4 flex-grow-1">
     <div class="card text-bg-light">
       <div class="card-body">
-        <h4 class="card-title text-center">4.4 Hours</h4>
+        <h4 class="card-title text-center">{{ user_metrics.learning_hours_fmt }}</h4>
       </div>
       <div class="card-footer text-center">Learning Hours</div>
     </div>
@@ -47,9 +47,9 @@
   <div class="mb-4 flex-grow-1">
     <div class="card text-bg-light">
       <div class="card-body">
-        <h4 class="card-title text-center">12 Mar 2024</h4>
+        <h4 class="card-title text-center">{{ user_metrics.longest_strike_fmt }}</h4>
       </div>
-      <div class="card-footer text-center">Last Seen</div>
+      <div class="card-footer text-center">Longest Strike</div>
     </div>
   </div>
 </div>
